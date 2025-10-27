@@ -16,8 +16,15 @@ $loggedIn = isset($_SESSION['user']);
 
   <main class="flex-grow p-6">
     <?php if ($loggedIn): ?>
+      <?php
+        include 'auth/db.php';
+        $username = $_SESSION['user'];
+        $result = mysqli_query($conn, "SELECT role FROM users WHERE username = '$username'");
+        $userData = mysqli_fetch_assoc($result);
+        $role = $userData['role'];
+      ?>
       <p class="mt-4 text-sm text-green-700">
-        Selamat datang, <?= $_SESSION['user']; ?>
+        Selamat datang, <?= $username ?> <span class="text-red-600">(<?= $role ?>)</span>
       </p>
 
       <?php
@@ -30,25 +37,22 @@ $loggedIn = isset($_SESSION['user']);
       <table class="table-auto w-full border mt-2">
         <thead>
           <tr class="bg-gray-200">
+            <th class="px-4 py-2">No</th>
             <th class="px-4 py-2">Tanggal</th>
             <th class="px-4 py-2">Deskripsi</th>
             <th class="px-4 py-2">Jenis</th>
             <th class="px-4 py-2">Gambar</th>
-            <th class="px-4 py-2">Aksi</th>
           </tr>
         </thead>
         <tbody>
           <?php while ($row = mysqli_fetch_assoc($data)): ?>
           <tr>
+            <td class="border px-4 py-2"><?= $row['id'] ?></td>
             <td class="border px-4 py-2"><?= $row['tanggal'] ?></td>
             <td class="border px-4 py-2"><?= $row['deskripsi'] ?></td>
             <td class="border px-4 py-2"><?= $row['jenis'] ?></td>
             <td class="border px-4 py-2">
               <img src="uploads/<?= $row['gambar'] ?>" class="w-20 h-auto rounded">
-            </td>
-            <td class="border px-4 py-2">
-              <a href="edit.php?id=<?= $row['id'] ?>" class="text-blue-600 hover:underline">Edit</a> |
-              <a href="auth/proses_hapus.php?id=<?= $row['id'] ?>" class="text-red-600 hover:underline" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
             </td>
           </tr>
           <?php endwhile; ?>

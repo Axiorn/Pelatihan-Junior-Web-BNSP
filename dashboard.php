@@ -16,24 +16,68 @@ $loggedIn = isset($_SESSION['user']);
 
   <main class="flex-grow p-6">
     <?php if ($loggedIn): ?>
-      <p class="mt-4 text-sm text-green-700">
-        Selamat datang, <?php echo $_SESSION['user']; ?>
-      </p>
+      <?php
+        include 'auth/db.php';
+        $username = $_SESSION['user'];
+        $result = mysqli_query($conn, "SELECT role FROM users WHERE username = '$username'");
+        $userData = mysqli_fetch_assoc($result);
+        $role = $userData['role'];
+      ?>
 
-      <h2 class="text-2xl font-bold mt-6 mb-4">Tambah Kegiatan</h2>
-
-      <form action="auth/proses_kegiatan.php" method="POST" enctype="multipart/form-data" class="space-y-4">
-        <textarea name="deskripsi" placeholder="Deskripsi kegiatan" required class="w-full p-2 border rounded"></textarea>
-
-        <div class="space-x-4">
-          <label><input type="radio" name="jenis" value="Internal" required> Internal</label>
-          <label><input type="radio" name="jenis" value="Eksternal"> Eksternal</label>
+      <?php if ($role !== 'admin'): ?>
+        <div class="bg-red-100 border-l-4 border-red-500 text-red-700 p-4" role="alert">
+          <p class="font-bold">Akses Ditolak</p>
+          <p>Halaman ini hanya dapat diakses oleh admin.</p>
         </div>
+        <a href="galeri.php" class="inline-block mt-4 bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">
+          Kembali ke Galeri
+        </a>
+      <?php else: ?>
+        <p class="mt-4 text-sm text-green-700">
+          Selamat datang, <?= $username ?> <span class="text-red-600">(<?= $role ?>)</span>
+        </p>
 
-        <input type="file" name="gambar" accept=".png,.jpg,.jpeg" required class="w-full p-2 border rounded">
+        <?php
+        $data = mysqli_query($conn, "SELECT * FROM kegiatan");
+        ?>
 
-        <button type="submit" class="bg-blue-600 text-white px-4 py-2 rounded">Simpan</button>
-      </form>
+        <div class="flex justify-between items-center mt-6 mb-4">
+          <h2 class="text-2xl font-bold">Dashboard</h2>
+          <a href="tambah_kegiatan.php">
+            <button class="bg-blue-600 text-white px-4 py-2 rounded hover:bg-blue-700">Tambah Kegiatan</button>
+          </a>
+        </div>  
+
+        <table class="table-auto w-full border mt-2">
+          <thead>
+            <tr class="bg-gray-200">
+              <th class="px-4 py-2">No</th>
+              <th class="px-4 py-2">Tanggal</th>
+              <th class="px-4 py-2">Deskripsi</th>
+              <th class="px-4 py-2">Jenis</th>
+              <th class="px-4 py-2">Gambar</th>
+              <th class="px-4 py-2">Aksi</th>
+            </tr>
+          </thead>
+          <tbody>
+            <?php while ($row = mysqli_fetch_assoc($data)): ?>
+            <tr>
+              <td class="border px-4 py-2"><?= $row['id'] ?></td>
+              <td class="border px-4 py-2"><?= $row['tanggal'] ?></td>
+              <td class="border px-4 py-2"><?= $row['deskripsi'] ?></td>
+              <td class="border px-4 py-2"><?= $row['jenis'] ?></td>
+              <td class="border px-4 py-2">
+                <img src="uploads/<?= $row['gambar'] ?>" class="w-20 h-auto rounded">
+              </td>
+              <td class="border px-4 py-2">
+                <a href="edit.php?id=<?= $row['id'] ?>" class="text-blue-600 hover:underline">Edit</a> |
+                <a href="auth/proses_hapus.php?id=<?= $row['id'] ?>" class="text-red-600 hover:underline" onclick="return confirm('Yakin ingin menghapus?')">Hapus</a>
+              </td>
+            </tr>
+            <?php endwhile; ?>
+          </tbody>
+        </table>
+      <?php endif; ?>
 
     <?php else: ?>
       <div class="bg-yellow-100 border-l-4 border-yellow-500 text-yellow-700 p-4" role="alert">

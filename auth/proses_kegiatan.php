@@ -27,7 +27,7 @@ if (in_array($ext, $allowed)) {
             VALUES ('$deskripsi', '$tanggal', '$jenis', '$gambar')";
   mysqli_query($conn, $query);
 
-  header("Location: ../galeri.php");
+  header("Location: ../dashboard.php");
 } else {
   echo "Format gambar tidak didukung.";
 }

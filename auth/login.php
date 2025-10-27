@@ -12,7 +12,14 @@ if (isset($_POST['login'])) {
 
   if ($user && password_verify($password, $user['password'])) {
     $_SESSION['user'] = $user['username'];
-    header("Location: ../dashboard.php");
+
+    if ($user['role'] === 'admin') {
+      header("Location: ../dashboard.php");
+    } elseif ($user['role'] === 'user') {
+      header("Location: ../galeri.php");
+    } else {
+      header("Location: ../index.php");
+    }
     exit;
   } else {
     $error = "Login gagal! Username atau password salah.";
@@ -37,17 +44,17 @@ if (isset($_POST['login'])) {
       </div>
     <?php endif; ?>
 
-    <form method="POST" action="login.php">
-      <input type="text" name="username" placeholder="Username" class="w-full p-2 mb-4 border rounded" required>
-      <input type="password" name="password" placeholder="Password" class="w-full p-2 mb-4 border rounded" required>
-      <button type="submit" name="login" class="w-full bg-green-600 text-white p-2 rounded">Login</button>
+    <form method="POST" action="login.php" class="space-y-4">
+      <input type="text" name="username" placeholder="Username" class="w-full p-2 border rounded" required>
+      <input type="password" name="password" placeholder="Password" class="w-full p-2 border rounded" required>
+      <button type="submit" name="login" class="w-full bg-green-600 text-white p-2 rounded hover:bg-green-700">Login</button>
     </form>
 
     <p class="mt-4 text-center text-sm">
       Belum punya akun? <a href="signup.php" class="text-blue-600 hover:underline">Sign Up</a>
     </p>
     <p class="mt-2 text-center text-sm">
-      <a href="../dashboard.php" class="text-blue-600 hover:underline">Masuk ke Dashboard tanpa login</a>
+      <a href="../index.php" class="text-blue-600 hover:underline">Masuk sebagai Guest</a>
     </p>
   </div>
 

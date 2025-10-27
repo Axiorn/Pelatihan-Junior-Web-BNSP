@@ -17,6 +17,9 @@ $row = mysqli_fetch_assoc($data);
   <?php include 'layout/header.php'; ?>
 
   <main class="flex-grow p-6">
+
+  <h2 class="text-2xl font-bold mt-6 mb-4">Edit Kegiatan</h2>
+
     <form action="auth/proses_edit.php" method="POST" enctype="multipart/form-data" class="space-y-4">
       <input type="hidden" name="id" value="<?= $row['id'] ?>">
 
